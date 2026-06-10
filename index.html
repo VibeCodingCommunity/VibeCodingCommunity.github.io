@@ -525,7 +525,11 @@
       <h2>🚀 دورهمی بعدی</h2>
       <p class="lead" style="font-size:16px;margin:12px 0">دورهمی جامعه وایب کدینگ؛ ادامه مسیر</p>
       <p style="color:var(--muted);line-height:1.8;margin-bottom:16px">دورهمی آنلاین بعدی جامعه وایب کدینگ برگزار می‌شود. اگر می‌خواهید در مسیر یادگیری و رشد همراه با جامعه باشید، پیشنهاد می‌کنم ثبت‌نام کنید.</p>
-      <a class="btn primary" href="https://evand.com/events/vibecoding-online/" target="_blank" rel="noopener">ثبت‌نام در دورهمی آنلاین</a>
+      <div class="cta-grid" style="margin-top:12px">
+        <a class="btn primary" href="https://evand.com/events/vibecoding-online/" target="_blank" rel="noopener">ثبت‌نام در دورهمی آنلاین</a>
+        <a class="btn" id="meetLink" href="https://meet.google.com/bcy-vzta-hvv" target="_blank" rel="noopener" style="display:none">🎥 ورود به Google Meet</a>
+        <a class="btn warn" id="calendarLink2" href="https://calendar.app.google/R2VkXK5seyrw7dxY9" target="_blank" rel="noopener" style="display:none">📅 افزودن به تقویم (دورهمی آنلاین)</a>
+      </div>
     </section>
 
     <footer class="footer">
@@ -543,6 +547,10 @@
     const EVENT_TITLE = 'دورهمی وایب کدینگ';
     const EVENT_LOCATION = 'کافه سپید و سیاه، تهران، خیابان انقلاب، خیابان وصال شیرازی، نرسیده به طالقانی، پلاک ۶۵، طبقه اول';
     const EVENT_DETAILS = 'حضور فقط برای افراد ثبت‌نام‌شده است. لطفاً همراه نیاورید. اگر نمی‌توانید بیایید به @m4tinbeigipv در تلگرام پیام بدهید. ثبت‌نام: https://evand.com/events/vibecoding';
+
+    // دورهمی دوم (آنلاین) - ۳۰ دقیقه بعد از پایان دورهمی اول
+    const EVENT_START_2 = new Date('2026-06-11T19:30:00+03:30');
+    const EVENT_END_2 = new Date('2026-06-11T22:30:00+03:30');
     const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
     const toFa = (value) => String(value).replace(/\d/g, d => faDigits[d]);
     const pad2 = (n) => String(Math.max(0, n)).padStart(2, '0');
@@ -558,6 +566,22 @@
       const diff = EVENT_START - now;
       const status = document.getElementById('eventStatus');
       const statusText = document.getElementById('statusText');
+      const meetLink = document.getElementById('meetLink');
+      const calendarLink2 = document.getElementById('calendarLink2');
+
+      // نیم ساعت بعد از پایان دورهمی اول
+      const thirtyMinAfterEvent1 = new Date(EVENT_END.getTime() + 30 * 60 * 1000);
+
+      // نمایش لینک تقویم دورهمی دوم (نیم ساعت بعد از دورهمی اول)
+      if(now >= thirtyMinAfterEvent1 && calendarLink2){
+        calendarLink2.style.display = 'flex';
+      }
+
+      // نمایش لینک Google Meet (وقتی دورهمی دوم شروع شد)
+      if(now >= EVENT_START_2 && meetLink){
+        meetLink.style.display = 'flex';
+      }
+
       if(now >= EVENT_END){
         ['days','hours','minutes','seconds'].forEach(id => document.getElementById(id).textContent = '۰۰');
         status.textContent = 'پایان یافته';
@@ -572,6 +596,18 @@
       }
       const totalSeconds = Math.floor(diff / 1000);
       const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      document.getElementById('days').textContent = toFa(pad2(days));
+      document.getElementById('hours').textContent = toFa(pad2(hours));
+      document.getElementById('minutes').textContent = toFa(pad2(minutes));
+      document.getElementById('seconds').textContent = toFa(pad2(seconds));
+      status.textContent = 'در انتظار شروع';
+      statusText.textContent = days === 0 ? 'امروز روز دورهمی است؛ مسیر و زمان رسیدن را از همین حالا چک کنید.' : 'برای اینکه چیزی را از دست ندهید، بهتر است زودتر مسیر را چک کنید.';
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
       const hours = Math.floor((totalSeconds % 86400) / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
